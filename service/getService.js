@@ -4,58 +4,113 @@ const path = require('../path');
 const simpleGit = require('simple-git');
 const respounce = require('../response/response')
 const env = process.env
-
-
 async function awsLogin(req, res, message) {
     try {
-        let access_key = req.body.accesskey
-        let secret_key = req.body.secretkey
-        let region = req.body.region
 
         // console.log("access_key : ",access_key)
-        const tfConfig = `
-        provider "aws" {
-            access_key = "${access_key}"
-            secret_key = "${secret_key}"
-            region = "${region}"
-          }
-        
-        data "aws_vpcs" "foo" {
-        }
-        output "foo" {
-          value = data.aws_vpcs.foo.ids
-        }`;
+        const userData = `
+        #!/bin/bash
 
-        fs.writeFileSync(`${path.directory}/awslogin.tf`, tfConfig);
+# Set the AWS region
+AWS_REGION="us-east-1"
+
+# Retrieve credentials from Secrets Manager
+aws_secret_json=$(aws secretsmanager get-secret-value --secret-id AWSDemo --region $AWS_REGION --output json)
+
+# Check if the AWS CLI command was successful
+if [ $? -ne 0 ]; then
+  echo "Failed to retrieve credentials from Secrets Manager"
+  exit 1
+fi
+
+# Extract Access Key and Secret Key from the JSON response
+ACCESS_KEY=$(echo "$aws_secret_json" | jq -r .SecretString | jq -r .access_key)
+SECRET_KEY=$(echo "$aws_secret_json" | jq -r .SecretString | jq -r .secret_key)
+
+# Output credentials for Terraform to read
+echo "{ \"aws_access_key\": \"$ACCESS_KEY\", \"aws_secret_key\": \"$SECRET_KEY\" }"
+`;
+
+        let config = `
+        data "external" "configure_aws" {
+            program = ["bash", "/home/theena/project/nodejs/aws_secret_manager 1/aws_secret_manager/configure_aws.sh"]
+          }
+          provider "aws" {
+            region     = "us-east-1"
+            access_key = data.external.configure_aws.result["aws_access_key"]
+            secret_key = data.external.configure_aws.result["aws_secret_key"]
+          }
+          
+          
+          data "aws_vpcs" "foo" {
+                  }
+                  output "foo" {
+                    value = data.aws_vpcs.foo.ids
+                  }
+        `
+
+        fs.writeFileSync(`${path.directory}/configure_aws.sh`, userData);
+        fs.writeFileSync(`${path.directory}/configure_aws.sh`, config);
         const configPath = `${path.directory}`;
         process.chdir(configPath);
 
-        exec('terraform apply -auto-approve', (applyError, applyStdout, applyStderr) => {
-            if (applyError) {
-                if (applyStderr.includes('terraform init -update')) {
-                    exec('terraform init -update', () => {
-                        awsLogin(req, res, message)
-                    })
-                } else if (applyStderr.includes('terraform init')) {
-                    console.log("123");
-                    exec('terraform init', () => {
-                        awsLogin(req, res, message)
-                    })
-                }else if(applyStderr.includes("request is invalid")){
-                    return res.status(400).json({ message : "accesskey and secretkey is invalid"})
-                }
-                console.error('Terraform failed:', applyStderr);
-                return res.status(400).json({ message: "aws login failed", result: applyStderr });
-            } else {
-                console.log('Terraform succeeded.');
-                respounce.createMessage(req, res, message)
-            }
-        });
+
 
     } catch (error) {
         return res.status(400).json({ message: " something went wrong ", result: error.message })
     }
 }
+
+// async function awsLogin(req, res, message) {
+//     try {
+//         let access_key = req.body.accesskey
+//         let secret_key = req.body.secretkey
+//         let region = req.body.region
+
+//         // console.log("access_key : ",access_key)
+//         const tfConfig = `
+//         provider "aws" {
+//             access_key = "${access_key}"
+//             secret_key = "${secret_key}"
+//             region = "${region}"
+//           }
+
+//         data "aws_vpcs" "foo" {
+//         }
+//         output "foo" {
+//           value = data.aws_vpcs.foo.ids
+//         }`;
+
+//         fs.writeFileSync(`${path.directory}/awslogin.tf`, tfConfig);
+//         const configPath = `${path.directory}`;
+//         process.chdir(configPath);
+
+//         exec('terraform apply -auto-approve', (applyError, applyStdout, applyStderr) => {
+//             if (applyError) {
+//                 if (applyStderr.includes('terraform init -update')) {
+//                     exec('terraform init -update', () => {
+//                         awsLogin(req, res, message)
+//                     })
+//                 } else if (applyStderr.includes('terraform init')) {
+//                     console.log("123");
+//                     exec('terraform init', () => {
+//                         awsLogin(req, res, message)
+//                     })
+//                 }else if(applyStderr.includes("request is invalid")){
+//                     return res.status(400).json({ message : "accesskey and secretkey is invalid"})
+//                 }
+//                 console.error('Terraform failed:', applyStderr);
+//                 return res.status(400).json({ message: "aws login failed", result: applyStderr });
+//             } else {
+//                 console.log('Terraform succeeded.');
+//                 respounce.createMessage(req, res, message)
+//             }
+//         });
+
+//     } catch (error) {
+//         return res.status(400).json({ message: " something went wrong ", result: error.message })
+//     }
+// }
 
 // Get list of AWS services
 
@@ -379,11 +434,15 @@ async function architectureSecurityGroup(req, res, message) {
 
 async function internetGateWayList(req, res, message) {
     try {
+        let vpcId = req.query.vpcId
+        if(!vpcId){
+            return res.status(400).json({ message: "vpc id requird"})
+        }
         const tfConfig = `
             data "aws_internet_gateway" "gw" {
                 filter {
                     name   = "attachment.vpc-id"
-                    values = ["vpc-04c20f3451c486381"] 
+                    values = ["${vpcId}"] 
                 }
             }
 
