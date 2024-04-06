@@ -173,8 +173,8 @@ async function codePipeline(req, res, message){
                 exec('terraform init -update',()=>{
                   codePipeline(req, res, message)
                 })
-              }else if(applyStderr.includes('terraform init ')){
-                exec('terraform init ',()=>{
+              }else if(applyStderr.includes('terraform init')){
+                exec('terraform init',()=>{
                   codePipeline(req, res, message)
                 })
               }else if(applyStderr.includes("already exists")){

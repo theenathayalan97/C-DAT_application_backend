@@ -91,8 +91,8 @@ async function ebs(req, res, message){
                 exec('terraform init -update',()=>{
                   ebs(req, res, message)
                 })
-              }else if(applyStderr.includes('terraform init ')){
-                exec('terraform init ',()=>{
+              }else if(applyStderr.includes('terraform init')){
+                exec('terraform init',()=>{
                   ebs(req, res, message)
                 })
               }else if(applyStderr.includes("already exists")){

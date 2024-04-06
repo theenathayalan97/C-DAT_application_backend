@@ -1,4 +1,5 @@
 let login = "login";
+let awsLogin = "aws login"
 let vpc = "VPC created";
 let subnet = "Subnet created";
 let route_table = "Route table created";
@@ -36,4 +37,4 @@ module.exports ={ login, vpc, subnet, route_table, internet_gateway,
     nat_gateway, security_group, ec2Instance, getVpc, getSubnet, getOs, getSecurityGroup, s3Bucket
   , accountDestroy, serviceDestroy, create_queue, snsCreate, codePush, codePull, rosaCreate, 
   createLoadBalancer, architecture, mailSend, dockerInstance, containerDeploy, appRunner, ebs,
-  code_pipeline, jenkinsPipeline, keyPair, Jenkins, getNatGateWay, getInternetGateWay }
+  code_pipeline, jenkinsPipeline, keyPair, Jenkins, getNatGateWay, getInternetGateWay, awsLogin }

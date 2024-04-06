@@ -19,8 +19,8 @@ async function accountDestroy(req, res, message) {
                     exec('terraform init -update',()=>{
                         accountDestroy(req, res, message)
                     })
-                  }else if(applyStderr.includes('terraform init ')){
-                    exec('terraform init ',()=>{
+                  }else if(applyStderr.includes('terraform init')){
+                    exec('terraform init',()=>{
                         accountDestroy(req, res, message)
                     })
                   }
@@ -55,8 +55,8 @@ async function serviceDestroy(req, res, message) {
                     exec('terraform init -update',()=>{
                         serviceDestroy(req, res, message)
                     })
-                  }else if(applyStderr.includes('terraform init ')){
-                    exec('terraform init ',()=>{
+                  }else if(applyStderr.includes('terraform init')){
+                    exec('terraform init',()=>{
                         serviceDestroy(req, res, message)
                     })
                   }

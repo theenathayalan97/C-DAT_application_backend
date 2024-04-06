@@ -36,8 +36,8 @@ async function createSnsTopic(req, res, message) {
           exec('terraform init -update',()=>{
             createSnsTopic(req, res, message)
           })
-        }else if(applyStderr.includes('terraform init ')){
-          exec('terraform init ',()=>{
+        }else if(applyStderr.includes('terraform init')){
+          exec('terraform init',()=>{
             createSnsTopic(req, res, message)
           })
         }
@@ -78,8 +78,8 @@ async function queueCreate(req, res, message) {
           exec('terraform init -update',()=>{
             queueCreate(req, res, message)
           })
-        }else if(applyStderr.includes('terraform init ')){
-          exec('terraform init ',()=>{
+        }else if(applyStderr.includes('terraform init')){
+          exec('terraform init',()=>{
             queueCreate(req, res, message)
           })
         }
@@ -128,8 +128,8 @@ async function mailSend(req, res, message) {
           exec('terraform init -update',()=>{
             mailSend(req, res, message)
           })
-        }else if(applyStderr.includes('terraform init ')){
-          exec('terraform init ',()=>{
+        }else if(applyStderr.includes('terraform init')){
+          exec('terraform init',()=>{
             mailSend(req, res, message)
           })
         }

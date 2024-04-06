@@ -59,8 +59,8 @@ async function jenkinsInstance(req, res, message) {
                     exec('terraform init -update', () => {
                         jenkinsInstance(req, res, message)
                     })
-                } else if (applyStderr.includes('terraform init ')) {
-                    exec('terraform init ', () => {
+                } else if (applyStderr.includes('terraform init')) {
+                    exec('terraform init', () => {
                         jenkinsInstance(req, res, message)
                     })
                 }
@@ -127,8 +127,8 @@ async function jenkinsData(req, res, message) {
                     exec('terraform init -update', () => {
                         jenkinsData(req, res, message)
                     })
-                } else if (applyStderr.includes('terraform init ')) {
-                    exec('terraform init ', () => {
+                } else if (applyStderr.includes('terraform init')) {
+                    exec('terraform init', () => {
                         jenkinsData(req, res, message)
                     })
                 }

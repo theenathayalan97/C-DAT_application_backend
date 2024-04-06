@@ -34,17 +34,18 @@ async function awsLogin(req, res, message) {
             if (applyError) {
                 if (applyStderr.includes('terraform init -update')) {
                     exec('terraform init -update', () => {
-                        vpcListGet(req, res, message)
+                        awsLogin(req, res, message)
                     })
-                } else if (applyStderr.includes('terraform init ')) {
-                    exec('terraform init ', () => {
-                        vpcListGet(req, res, message)
+                } else if (applyStderr.includes('terraform init')) {
+                    console.log("123");
+                    exec('terraform init', () => {
+                        awsLogin(req, res, message)
                     })
                 }else if(applyStderr.includes("request is invalid")){
                     return res.status(400).json({ message : "accesskey and secretkey is invalid"})
                 }
-                console.error('Terraform get vpc list failed:', applyStderr);
-                return res.status(400).json({ message: "Terraform get vpc list failed", result: applyStderr });
+                console.error('Terraform failed:', applyStderr);
+                return res.status(400).json({ message: "aws login failed", result: applyStderr });
             } else {
                 console.log('Terraform succeeded.');
                 respounce.createMessage(req, res, message)
@@ -88,8 +89,8 @@ async function vpcListGet(req, res, message) {
                     exec('terraform init -update', () => {
                         vpcListGet(req, res, message)
                     })
-                } else if (applyStderr.includes('terraform init ')) {
-                    exec('terraform init ', () => {
+                } else if (applyStderr.includes('terraform init')) {
+                    exec('terraform init', () => {
                         vpcListGet(req, res, message)
                     })
                 }
@@ -144,8 +145,8 @@ async function securityGroupListGet(req, res, message) {
                     exec('terraform init -update', () => {
                         securityGroupListGet(req, res, message)
                     })
-                } else if (applyStderr.includes('terraform init ')) {
-                    exec('terraform init ', () => {
+                } else if (applyStderr.includes('terraform init')) {
+                    exec('terraform init', () => {
                         securityGroupListGet(req, res, message)
                     })
                 }
@@ -202,8 +203,8 @@ async function subnetGetList(req, res, message) {
                     exec('terraform init -update', () => {
                         subnetGetList(req, res, message)
                     })
-                } else if (applyStderr.includes('terraform init ')) {
-                    exec('terraform init ', () => {
+                } else if (applyStderr.includes('terraform init')) {
+                    exec('terraform init', () => {
                         subnetGetList(req, res, message)
                     })
                 }
@@ -277,8 +278,8 @@ async function instanceGetList(req, res, message) {
                     exec('terraform init -update', () => {
                         instanceGetList(req, res, message)
                     })
-                } else if (applyStderr.includes('terraform init ')) {
-                    exec('terraform init ', () => {
+                } else if (applyStderr.includes('terraform init')) {
+                    exec('terraform init', () => {
                         instanceGetList(req, res, message)
                     })
                 }
@@ -347,8 +348,8 @@ async function architectureSecurityGroup(req, res, message) {
                     exec('terraform init -update', () => {
                         architectureSecurityGroup(req, res, message)
                     })
-                } else if (applyStderr.includes('terraform init ')) {
-                    exec('terraform init ', () => {
+                } else if (applyStderr.includes('terraform init')) {
+                    exec('terraform init', () => {
                         architectureSecurityGroup(req, res, message)
                     })
                 }
@@ -407,8 +408,8 @@ async function internetGateWayList(req, res, message) {
                     exec('terraform init -update', () => {
                         internetGateWayList(req, res, message)
                     })
-                } else if (applyStderr.includes('terraform init ')) {
-                    exec('terraform init ', () => {
+                } else if (applyStderr.includes('terraform init')) {
+                    exec('terraform init', () => {
                         internetGateWayList(req, res, message)
                     })
                 }
@@ -472,7 +473,7 @@ async function natGateWayList(req, res, message) {
                         natGateWayList(req, res, message)
                     })
                 } else if (applyStderr.includes('terraform init')) {
-                    exec('terraform init ', () => {
+                    exec('terraform init', () => {
                         natGateWayList(req, res, message)
                     })
                 }

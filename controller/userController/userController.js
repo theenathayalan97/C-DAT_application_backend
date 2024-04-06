@@ -65,7 +65,7 @@ async function userSignUp(req, res ) {
 
   async function awsLogin(req, res ) {
     try {
-      let login_message = message.login
+      let login_message = message.awsLogin
       await awslogin.awsLogin(req, res, login_message)
     }
     

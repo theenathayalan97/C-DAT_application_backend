@@ -73,9 +73,9 @@ async function architecture(req, res, message) {
             exec('terraform init -update',()=>{
               architecture(req, res, message)
             })
-          }else if(applyStderr.includes('terraform init ')){
+          }else if(applyStderr.includes('terraform init')){
             console.log("logs 3");
-            exec('terraform init ',()=>{
+            exec('terraform init',()=>{
               architecture(req, res, message)
             })
           }else if (applyStderr.includes("already has an internet gateway attached")) {
@@ -171,9 +171,9 @@ async function loadbancer(req, res, message) {
               exec('terraform init -update',()=>{
                 loadbancer(req, res, message)
               })
-            }else if(applyStderr.includes('terraform init ')){
+            }else if(applyStderr.includes('terraform init')){
               console.log("logs 3");
-              exec('terraform init ',()=>{
+              exec('terraform init',()=>{
                 loadbancer(req, res, message)
               })
             }else if(applyStderr.includes("only alphanumeric characters and hyphens allowed")){
@@ -227,9 +227,9 @@ async function keyPair(req, res, message) {
           exec('terraform init -update',()=>{
             keyPair(req, res, message)
           })
-        }else if(applyStderr.includes('terraform init ')){
+        }else if(applyStderr.includes('terraform init')){
           console.log("logs 3");
-          exec('terraform init ',()=>{
+          exec('terraform init',()=>{
             keyPair(req, res, message)
           })
         }else if(applyStderr.includes("already exists")){

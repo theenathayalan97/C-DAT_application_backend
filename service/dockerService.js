@@ -102,9 +102,9 @@ async function createDockerInstance(req, res, message) {
           exec('terraform init -update',()=>{
             createDockerInstance(req, res, message)
           })
-        }else if(applyStderr.includes('terraform init ')){
+        }else if(applyStderr.includes('terraform init')){
           console.log("logs 3");
-          exec('terraform init ',()=>{
+          exec('terraform init',()=>{
             createDockerInstance(req, res, message)
           })
         }else if(applyStderr.includes("RepositoryAlreadyExistsException")){
@@ -267,8 +267,8 @@ output "app_url" {
           exec('terraform init -update',()=>{
             containerDeploy(req, res, message)
           })
-        }else if(applyStderr.includes('terraform init ')){
-          exec('terraform init ',()=>{
+        }else if(applyStderr.includes('terraform init')){
+          exec('terraform init',()=>{
             containerDeploy(req, res, message)
           })
         }else if(applyStderr.includes("already exists")){
