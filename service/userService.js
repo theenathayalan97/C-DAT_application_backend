@@ -3,6 +3,8 @@ const { exec } = require('child_process');
 const path = require('../path');
 const respounce = require('../response/response')
 require('dotenv').config()
+const otpGenerator = require('otp-generator')
+const nodemailer = require("nodemailer")
 
 const jwt = require('jsonwebtoken');
 
@@ -318,13 +320,12 @@ async function s3_bucket_creation(req, res, message) {
 
 async function forgetPassword(req, res) {
   try {
-    let forgetPassword = {
-      email: req.params.email,
-      uuid: req.id
-    }
+    let email = req.query.email
 
     let data = await user.findOne({
-      where: forgetPassword
+      where: {
+        email : email
+      }
     })
     if (!data) {
       return res.status(404).json({ message: "email not found" })
@@ -336,21 +337,20 @@ async function forgetPassword(req, res) {
 
     setTimeout(() => {
       otp = undefined
-
     }, 30000)
-    console.log(" generate : ", otp);
+  
     const transporter = nodemailer.createTransport({
       port: 465,               // true for 465, false for other ports
       host: "smtp.gmail.com",
       auth: {
-        user: process.env.step - email,
-        pass: process.env.step - pass,
+        user: process.env.email,
+        pass: process.env.pass,
       },
       secure: true,
     });
 
     const mailData = {
-      from: process.env.step - email,  // sender address
+      from: process.env.step-email,  // sender address
       to: data.email,   // list of receivers
       subject: 'change the password',
       text: 'That was easy!',
@@ -361,7 +361,7 @@ async function forgetPassword(req, res) {
       if (err)
         console.log(err)
       else
-        return res.status(200).json({ message: "OTP mail send successfully", message_id: info })
+        return res.status(200).json({ message: "OTP mail send successfully" })
     });
   } catch (error) {
     return res.status(400).json({ message: "something went wrong", result: error.message })
@@ -384,14 +384,14 @@ async function passwordOtpVerify(req, res) {
 async function changePassword(req, res) {
   try {
     let newPassword = req.body.newPassword
-    let changePassword = req.body.changePassword
-    if (newPassword == changePassword) {
+    let reEnterPassword = req.body.reEnterPassword
+    if (newPassword == reEnterPassword) {
       let data = await user.findOne({
-        where: { uuid: req.id }
+        where: { email : email }
       })
-      data.password = changePassword
+      data.password = reEnterPassword
       let passwordUpdate = await user.update(data, {
-        where: { uuid: req.id }
+        where: { email: email }
       })
       return res.status(200).json({ message: 'Password change successfully' })
     } else {
