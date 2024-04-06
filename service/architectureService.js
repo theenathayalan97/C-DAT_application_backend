@@ -90,8 +90,11 @@ async function architecture(req, res, message) {
           }else if (applyStderr.includes("The maximum number")) {
             fs.unlinkSync(fileName)
             return res.status(400).send(`The maximum number is not achived  `);
+          }
+          else if (applyStderr.includes("already declared")) {
+            fs.unlinkSync(fileName)
+            return res.status(400).send(`already name created`);
           } else {
-            
             console.error("Terraform Architecture created failed:", applyStderr);
             fs.unlinkSync(fileName)
             return res.status(400).send("Terraform Architecture created failed");
