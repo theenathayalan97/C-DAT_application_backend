@@ -58,6 +58,7 @@ router.post("/organization_login", middleware.authorization, middleware.authenti
 //user
 router.post("/signup", userController.userSignUp);
 router.post("/login",  userController.login);
+router.post("/aws_login",  userController.awsLogin);
 router.post("/forget_password",  userController.forgetPassword);
 router.post("/otp_verifycation",  userController.passwordOtpVerify);
 router.post("/change_password",  userController.changePassword);

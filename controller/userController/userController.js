@@ -1,4 +1,5 @@
 const userService = require('../../service/userService')
+const awslogin = require("../../service/getService")
 let message = require('../../response/message')
 
 
@@ -55,6 +56,19 @@ async function userSignUp(req, res ) {
       let login_message = message.login
       await userService.userLogin(req, res, login_message)
     }
+    
+    catch (error) {
+      console.log("error is: ", error);
+      return res.status(400).json({ message: " something went wrong ", result: error.message })
+    }
+  }
+
+  async function awsLogin(req, res ) {
+    try {
+      let login_message = message.login
+      await awslogin.awsLogin(req, res, login_message)
+    }
+    
     catch (error) {
       console.log("error is: ", error);
       return res.status(400).json({ message: " something went wrong ", result: error.message })
@@ -109,5 +123,5 @@ async function userSignUp(req, res ) {
 
     module.exports = { adminSignUp, superAdminSignUp, organizationSignUp, organizationLogin, 
     userSignUp, login   , userGet, organizationGet, serviceGet, forgetPassword, changePassword,
-    passwordOtpVerify }
+    passwordOtpVerify, awsLogin }
   

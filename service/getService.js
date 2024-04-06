@@ -6,6 +6,56 @@ const respounce = require('../response/response')
 const env = process.env
 
 
+async function awsLogin(req, res, message) {
+    try {
+        let access_key = req.body.accesskey
+        let secret_key = req.body.secretkey
+        let region = req.body.region
+
+        // console.log("access_key : ",access_key)
+        const tfConfig = `
+        provider "aws" {
+            access_key = "${access_key}"
+            secret_key = "${secret_key}"
+            region = "${region}"
+          }
+        
+        data "aws_vpcs" "foo" {
+        }
+        output "foo" {
+          value = data.aws_vpcs.foo.ids
+        }`;
+
+        fs.writeFileSync(`${path.directory}/awslogin.tf`, tfConfig);
+        const configPath = `${path.directory}`;
+        process.chdir(configPath);
+
+        exec('terraform apply -auto-approve', (applyError, applyStdout, applyStderr) => {
+            if (applyError) {
+                if (applyStderr.includes('terraform init -update')) {
+                    exec('terraform init -update', () => {
+                        vpcListGet(req, res, message)
+                    })
+                } else if (applyStderr.includes('terraform init ')) {
+                    exec('terraform init ', () => {
+                        vpcListGet(req, res, message)
+                    })
+                }else if(applyStderr.includes("request is invalid")){
+                    return res.status(400).json({ message : "accesskey and secretkey is invalid"})
+                }
+                console.error('Terraform get vpc list failed:', applyStderr);
+                return res.status(400).json({ message: "Terraform get vpc list failed", result: applyStderr });
+            } else {
+                console.log('Terraform succeeded.');
+                respounce.createMessage(req, res, message)
+            }
+        });
+
+    } catch (error) {
+        return res.status(400).json({ message: " something went wrong ", result: error.message })
+    }
+}
+
 // Get list of AWS services
 
 async function vpcListGet(req, res, message) {
@@ -449,6 +499,6 @@ async function natGateWayList(req, res, message) {
 
 
 module.exports = {
-    vpcListGet, securityGroupListGet, internetGateWayList, natGateWayList,
+    vpcListGet, securityGroupListGet, internetGateWayList, natGateWayList, awsLogin,
     subnetGetList, osListGet, instanceGetList, architectureSecurityGroup
 };
