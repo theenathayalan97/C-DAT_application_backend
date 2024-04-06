@@ -1,0 +1,31 @@
+Archetecture Api : 
+
+error 1: Already name diclure and duplicate tf is create extra subnet
+
+  Solution:
+    1. check the tagname in database in this account
+    2. fs file create one file and remove the create file.
+    3. success responce time add the tag name in database.
+
+error 2: how value pass in CIDR :
+
+  solution:
+    1.Complete learn CIDR
+
+error 3: internetGate way
+
+  1. Tag name space error through
+  2. Duplicate error
+  3. internet gate way is uniqe vpc api
+
+error 4:
+
+  1. file will not create in route table only upgrade 
+
+  solution for 1: state file delete route table is created
+
+error 5:
+
+  1. file create but next hit time create files delete
+
+  solution : consider for state tf file so state tf delete. 

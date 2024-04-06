@@ -1,0 +1,118 @@
+pipeline {
+    agent any
+
+    environment {
+
+        script {
+            def data = load("jenkinsService.js")
+            AWS_DEFAULT_REGION = data.findValue.AWS_DEFAULT_REGION
+            AWS_ACCOUNT_ID = data.findValue.AWS_ACCOUNT_ID
+            CODECOMMIT_REPO_URL = data.findValue.CODECOMMIT_REPO_URL
+            ECR_REPO_NAME = data.findValue.ECR_REPO_NAME
+            DOCKER_IMAGE_NAME = data.findValue.DOCKER_IMAGE_NAME
+            DOCKER_HOST_IP = data.findValue.DOCKER_HOST_IP
+            DOCKER_HOST_PORT = data.findValue.DOCKER_HOST_PORT
+            YOUR_CONTAINER = data.findValue.YOUR_CONTAINER
+            // AWS_CREDENTIALS = credentials('aws_accesskey')
+            AWS_ACCESS_KEY_ID = data.findValue.ACCESSKEY
+            AWS_SECRET_ACCESS_KEY = data.findValue.SECRETKEY
+            IMAGE_TAG = data.findValue.IMAGE_TAG
+        }
+        // AWS_DEFAULT_REGION = 'ap-south-1'
+        // AWS_ACCOUNT_ID = '482088842115'
+        // CODECOMMIT_REPO_URL = 'https://git-codecommit.ap-south-1.amazonaws.com/v1/repos/datayaan_website2.0'
+        // ECR_REPO_NAME = 'sample-repo'
+        // DOCKER_IMAGE_NAME = 'sample-repo'
+        // DOCKER_HOST_IP = '3.108.41.34'
+        // DOCKER_HOST_PORT = '9003'
+        // YOUR_CONTAINER = '482088842115.dkr.ecr.ap-south-1.amazonaws.com/sample-repo'
+        // AWS_CREDENTIALS = credentials('aws_provider') // Use the ID you set in Jenkins credentials
+        // IMAGE_TAG = "sample-repo"
+    }
+
+    stages {
+        stage('Check AWS CLI Version') {
+            steps {
+                script {
+                    sh 'aws --version'
+                }
+            }
+
+
+            stage('Checkout') {
+                steps {
+                    git branch: 'master', credentialsId: 'aws_codecommit_cre', url: CODECOMMIT_REPO_URL
+                }
+            }
+
+            stage('Logging into AWS ECR') {
+                steps {
+                    script {
+                        sh "aws ecr get-login-password --region ${AWS_DEFAULT_REGION} | docker login --username AWS --password-stdin ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com"
+                    }
+                }
+            }
+
+            stage('Build Docker Image') {
+                steps {
+                    script {
+                        // Build Docker image
+                        def dockerImage = docker.build("${YOUR_CONTAINER}:${IMAGE_TAG}")
+                        dockerImage.push()
+                    }
+                }
+            }
+
+            stage('Pushing to ECR') {
+                steps {
+                    script {
+                        echo('Pushing the image')
+                        sh "docker tag ${YOUR_CONTAINER}:${IMAGE_TAG} ${YOUR_CONTAINER}:${IMAGE_TAG}"
+                        sh "docker push ${YOUR_CONTAINER}:${IMAGE_TAG}"
+                        echo('Image pushed to the repository successfully')
+                    }
+                }
+            }
+
+            stage('Deploying to Docker') {
+                steps {
+                    script {
+                        // Pull the image from ECR
+                        sh "aws ecr get-login-password --region ${AWS_DEFAULT_REGION} | docker login --username AWS --password-stdin ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com"
+                        sh "docker pull ${YOUR_CONTAINER}:${IMAGE_TAG}"
+                        echo('docker image pulled')
+                    }
+                }
+            }
+
+            stage('Check and Stop Container') {
+                steps {
+                    script {
+                        echo('check & stop stage')
+                        def portToStop = 80
+                        def containerIds = sh(script: "docker ps -q --filter=expose=${portToStop}", returnStdout: true).trim()
+                        if (containerIds) {
+                            // Split the container IDs and stop each container
+                            containerIds.split("\n").each { containerId ->
+                                sh "docker stop ${containerId}"
+                                sh "docker rm ${containerId}"
+                                echo "Stopped and removed container ID: ${containerId}"
+                            }
+                        } else {
+                            echo "No containers found using port ${portToStop}"
+                        }
+                    }
+                }
+            }
+            
+            stage('Run New Container') {
+                steps {
+                    script {
+                        sh "docker run -d -p 8000:80 482088842115.dkr.ecr.ap-south-1.amazonaws.com/sample-repo:sample-repo"
+                    }
+                }
+            }
+
+        }
+    }
+}
