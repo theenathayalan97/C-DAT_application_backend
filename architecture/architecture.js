@@ -527,6 +527,7 @@ async function createEc2Instance(req, res) {
     let securityGroupTittle = req.body.securityGroup.securityGroupTittle
     let securityGroupTagName = req.body.securityGroup.securityGroupTagName
     let securityGroupId = req.body.ec2Instance.securityGroupId
+    let vpcTagName = req.body.vpc.vpcTagName
     let instanceDetail = []
     if (instanceTagName.length == 0) {
       return res.status(400).json({ message: "instance name is required" })
@@ -551,12 +552,55 @@ async function createEc2Instance(req, res) {
         publicIP[i] == true
       }
       let instance = `
+      resource "aws_security_group" "Demo_cdat" {
+        name        = "Demo_cdat"
+        description = "Allow TLS inbound traffic"
+        vpc_id      =  aws_vpc.${vpcTagName[i]}.id
+      
+      //type ssh,rdp,http
+        ingress {
+          description      = "TLS from VPC"
+          from_port        = 22
+          to_port          = 22
+          protocol         = "tcp" 
+          cidr_blocks      = ["0.0.0.0/0"]  
+          ipv6_cidr_blocks = ["::/0"]
+        }
+          ingress {
+          description      = "TLS from VPC"
+          from_port        = 443
+          to_port          = 443
+          protocol         = "tcp" 
+          cidr_blocks      = ["0.0.0.0/0"] 
+          ipv6_cidr_blocks = ["::/0"]
+        }
+          ingress {
+          description      = "TLS from VPC"
+          from_port        = 80
+          to_port          = 80
+          protocol         = "tcp" 
+          cidr_blocks      = ["0.0.0.0/0"] 
+          ipv6_cidr_blocks = ["::/0"]
+        }
+      
+        egress {
+          from_port        = 0
+          to_port          = 0
+          protocol         = "-1"
+          cidr_blocks      = ["0.0.0.0/0"]
+          ipv6_cidr_blocks = ["::/0"]
+        }
+      
+        tags = {
+          Name = "Demo_cdat"
+        }
+      }
       resource "aws_instance" "${instanceTagName[i]}"{
           ami = "${ami[i]}"
           instance_type = "${instanceType[i]}"
           associate_public_ip_address = "${publicIP[i]}"
-          subnet_id = "${subnetTagName[i]}"
-          vpc_security_group_ids = ["${securityGroupTagName[i]}"]
+          subnet_id = aws_subnet.${subnetTagName[i]}.id
+          vpc_security_group_ids = [aws_security_group.Demo_cdat.id]
           tags = {
           Name = "${instanceTagName[i]}"
         }

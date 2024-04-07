@@ -5,6 +5,11 @@ const respounce = require('../response/response')
 
 async function jenkinsInstance(req, res, message) {
     try {
+        // aws configure
+        let env = process.env
+        let accesskey = env.accesskey
+        let secretkey = env.secretkey
+        let region = env.region
 
         let repo = req.body.repoName
         let instance_name = req.body.instanceTagName
@@ -12,6 +17,7 @@ async function jenkinsInstance(req, res, message) {
         let instance_type = req.body.instanceType //t2.micro
         let subnet_id = req.body.subnetId  //subnet-027f6c6c1f4cd07c3
         let security_group_id = req.body.securityGroupId //["sg-0c1894e242d5ce805"]
+        let accountId = "411571901235"
 
         const tfConfig = `
         resource "aws_instance" "${instance_name}" {
