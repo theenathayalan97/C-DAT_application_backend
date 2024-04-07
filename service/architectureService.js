@@ -41,6 +41,7 @@ async function architecture(req, res, message) {
       let ec2InstanceDetail = await createArchitecture.createEc2Instance(req, res)
       config += ec2InstanceDetail
     }
+    console.log("the instance data : ",config)
     if (config.length > 0) {
       const currentDate = new Date();
       const formattedDate = currentDate.toISOString().replace(/[:.]/g, '-');
@@ -51,7 +52,7 @@ async function architecture(req, res, message) {
       const configPath = `${path.directory}`;
       process.chdir(configPath);
 
-
+      
       let configData = [`${JSON.stringify(req.body)}`]
       const jsonData = JSON.parse(configData[0]);
       // console.log("the data is : ",jsonData)
