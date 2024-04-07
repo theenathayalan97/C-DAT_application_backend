@@ -69,6 +69,9 @@ router.get("/user_list",middleware.authorization, middleware.authentication(['su
 router.get("/organization_list",middleware.authorization, middleware.authentication(['superAdmin','admin','user'],true), userController.organizationGet);
 router.get("service_list",middleware.authorization, middleware.authentication(['superAdmin','admin'],true), userController.serviceGet)
 
+// instance creation  subnetSecurityList
+router.get("/subSecInstancelist",getServiceController.architectureSecurity_group_list);
+
 //service
 router.post("/s3_bucket", middleware.authorization, middleware.authentication(['superAdmin','admin'],true),serviceController.s3_bucket)
 router.get("/vpclist",getServiceController.vpc_list);

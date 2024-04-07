@@ -13,7 +13,7 @@ pipeline {
             DOCKER_HOST_IP = data.findValue.DOCKER_HOST_IP
             DOCKER_HOST_PORT = data.findValue.DOCKER_HOST_PORT
             YOUR_CONTAINER = data.findValue.YOUR_CONTAINER
-            // AWS_CREDENTIALS = credentials('aws_accesskey')
+            AWS_CREDENTIALS = credentials('aws_codecommit_cre')
             AWS_ACCESS_KEY_ID = data.findValue.ACCESSKEY
             AWS_SECRET_ACCESS_KEY = data.findValue.SECRETKEY
             IMAGE_TAG = data.findValue.IMAGE_TAG
@@ -67,7 +67,7 @@ pipeline {
                 steps {
                     script {
                         echo('Pushing the image')
-                        sh "docker tag ${YOUR_CONTAINER}:${IMAGE_TAG} ${YOUR_CONTAINER}:${IMAGE_TAG}"
+                        sh "docker tag ${YOUR_CONTAINER}:${IMAGE_TAG} ${AWS_ACCOUNT_ID}.dkr.ecr.ap-south-1.amazonaws.com/${YOUR_CONTAINER}:${IMAGE_TAG}"
                         sh "docker push ${YOUR_CONTAINER}:${IMAGE_TAG}"
                         echo('Image pushed to the repository successfully')
                     }
@@ -108,7 +108,7 @@ pipeline {
             stage('Run New Container') {
                 steps {
                     script {
-                        sh "docker run -d -p 8000:80 482088842115.dkr.ecr.ap-south-1.amazonaws.com/sample-repo:sample-repo"
+                        sh "docker run -d -p 8000:80 ${AWS_ACCOUNT_ID}.dkr.ecr.ap-south-1.amazonaws.com/${YOUR_CONTAINER}:${IMAGE_TAG}"
                     }
                 }
             }

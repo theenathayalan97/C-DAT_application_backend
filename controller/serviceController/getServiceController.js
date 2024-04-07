@@ -1,4 +1,5 @@
 const getService = require('../../service/getService')
+const subService = require("../../subService/instanceServices")
 
 let message = require('../../response/message')
 
@@ -11,6 +12,16 @@ async function vpc_list(req, res) {
         return res.status(400).json({ message: " something went wrong ", result: error.message })
     }
 };
+
+// async function subnet_security_list(req, res) {
+//     try {
+//         let vpc_list_message = message.getSecurityGroup
+//         const vpcList = await subService.subnetSecurityList(req, res, vpc_list_message)
+//     } catch (error) {
+//         console.log("get vpc_list is error :", error);
+//         return res.status(400).json({ message: " something went wrong ", result: error.message })
+//     }
+// };
 
 async function subnet_list(req, res) {
     try {

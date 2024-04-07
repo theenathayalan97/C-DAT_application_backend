@@ -11,8 +11,8 @@
       <configVersion>2</configVersion>
       <userRemoteConfigs>
         <hudson.plugins.git.UserRemoteConfig>
-          <url>https://git-codecommit.ap-south-1.amazonaws.com/v1/repos/datayaan_website2.0</url>
-          <credentialsId>aws_codecommit_cre</credentialsId>
+          <url>https://github.com/theenathayalan97/datayaan_website2.0</url>
+          <credentialsId>	git_credentials</credentialsId>
         </hudson.plugins.git.UserRemoteConfig>
       </userRemoteConfigs>
       <branches>

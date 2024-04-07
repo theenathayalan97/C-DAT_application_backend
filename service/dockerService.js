@@ -53,17 +53,17 @@ async function createDockerInstance(req, res, message) {
                   sudo aws configure set aws_secret_access_key ${secretkey}
                   sudo aws configure set default.region ${region}
                   sudo aws configure set default.output json
-                  aws ecr get-login-password --region ap-south-1 | sudo docker login --username AWS --password-stdin 482088842115.dkr.ecr.ap-south-1.amazonaws.com
+                  aws ecr get-login-password --region ap-south-1 | sudo docker login --username AWS --password-stdin ${accountId}.dkr.ecr.ap-south-1.amazonaws.com
                   sudo apt install python3-pip -y
                   sudo pip install git-remote-codecommit -q
                   sleep 10
                   git clone ${git_url}
-                  sleep 30
+                  sleep 10
                   cd /
                   cd datayaan_website2.0
                   cd datayaan_website2.0
                   sudo docker build -t ${container_repo_name} .
-                  sleep 60
+                  sleep 30
                   sudo docker tag ${container_repo_name}:latest ${accountId}.dkr.ecr.ap-south-1.amazonaws.com/${container_repo_name}:latest
                   sudo docker push ${accountId}.dkr.ecr.${region}.amazonaws.com/${container_repo_name}:latest
                   sudo docker run -d -p 80:80 ${accountId}.dkr.ecr.${region}.amazonaws.com/${container_repo_name}:latest
@@ -71,7 +71,7 @@ async function createDockerInstance(req, res, message) {
                   EOF
      
       tags = {
-        Name = "${container_repo_name}"
+        Name = "${instance_name}"
       }
      
       provisioner "remote-exec" {
@@ -94,7 +94,7 @@ async function createDockerInstance(req, res, message) {
     fs.writeFileSync(`${path.directory}/docker.tf`, tfConfig);
     const configPath = `${path.directory}`;
     process.chdir(configPath);
-
+    console.log(123);
     // Run Terraform commands
     exec('terraform apply -auto-approve', (applyError, applyStdout, applyStderr) => {
       if (applyError) {
@@ -107,9 +107,15 @@ async function createDockerInstance(req, res, message) {
           exec('terraform init',()=>{
             createDockerInstance(req, res, message)
           })
-        }else if(applyStderr.includes("RepositoryAlreadyExistsException")){
+        }
+         if(applyStderr.includes("RepositoryAlreadyExistsException")){
           return res.status(400).json({ message: "Repository name already exit" });
         }
+        
+        if(applyStderr.includes("remote-exec")){
+          return res.status(400).json({ message: "Time out error" });
+        }
+        
         console.log('docker creation failed:', applyStderr);
         return res.status(400).json({ message: "docker creation failed" });
       } else {

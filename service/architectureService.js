@@ -14,6 +14,8 @@ async function architecture(req, res, message) {
     let securityGroup = req.body.securityGroup.securityGroupTittle
     let ec2Instance = req.body.ec2Instance.ec2InstanceTittle
     let destroyState = `${path.directory}/terraform.tfstate`
+
+    
     if (vpc == 'vpc') {
       let vpcDetail = await createArchitecture.createVpc(req, res)
       config += vpcDetail

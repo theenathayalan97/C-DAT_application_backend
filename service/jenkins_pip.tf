@@ -9,7 +9,7 @@
           }
           
           provider "jenkins" {
-            server_url = "http://65.1.130.74:8080/"  # Specify the correct Jenkins server URL
+            server_url = "http://13.233.142.3:8080/"  # Specify the correct Jenkins server URL
             username   = "root"
             password   = "root"
           }

@@ -518,7 +518,6 @@ function myFunction(value) {
 
 async function createEc2Instance(req, res) {
   try {
-    console.log("createeeeee",req.body);
     let subnetId = req.body.ec2Instance.subnetId
     let subnetTittle = req.body.subnet.subnetTittle
     let subnetTagName = req.body.subnet.subnetTagName

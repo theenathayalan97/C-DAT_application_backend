@@ -23,7 +23,22 @@ async function jenkinsInstance(req, res, message) {
             vpc_security_group_ids      = ["${security_group_id}"]
            
             user_data = <<-EOF
-                      #!/bin/bash
+                      #!/bin/bash 
+                      sudo apt update -y
+                      sudo apt install -y awscli docker.io
+                      sleep 60 
+                      sudo usermod -aG docker ubuntu
+                      sudo usermod -aG docker jen
+                      # echo 'sudo systemctl restart docker' | sudo tee -a /tmp/restart_docker.sh
+                      sudo chmod +x /tmp/restart_docker.sh
+                      sudo /tmp/restart_docker.sh
+                      newgrp docker  # Switch to the "docker" group
+                      sleep 60  # Wait for Docker to initialize
+                      sudo aws configure set aws_access_key_id ${accesskey}
+                      sudo aws configure set aws_secret_access_key ${secretkey}
+                      sudo aws configure set default.region ${region}
+                      sudo aws configure set default.output json
+                      aws ecr get-login-password --region ap-south-1 | sudo docker login --username AWS --password-stdin ${accountId}.dkr.ecr.ap-south-1.amazonaws.com
                       sudo wget -O /usr/share/keyrings/jenkins-keyring.asc https://pkg.jenkins.io/debian-stable/jenkins.io-2023.key
                       echo deb [signed-by=/usr/share/keyrings/jenkins-keyring.asc] https://pkg.jenkins.io/debian-stable binary/ | sudo tee /etc/apt/sources.list.d/jenkins.list > /dev/null
                       sudo apt-get update
@@ -90,7 +105,7 @@ async function jenkinsData(req, res, message) {
           }
           
           provider "jenkins" {
-            server_url = "http://65.1.130.74:8080/"  # Specify the correct Jenkins server URL
+            server_url = "http://13.233.142.3:8080/"  # Specify the correct Jenkins server URL
             username   = "root"
             password   = "root"
           }
@@ -106,14 +121,14 @@ async function jenkinsData(req, res, message) {
 
         let findValue = {}
         findValue.AWS_DEFAULT_REGION = 'ap-south-1'
-        findValue.AWS_ACCOUNT_ID = '65.1.130.74'
-        findValue.CODECOMMIT_REPO_URL = 'https://git-codecommit.ap-south-1.amazonaws.com/v1/repos/datayaan_website2.0'
-        findValue.ECR_REPO_NAME = 'sample-repo'
+        findValue.AWS_ACCOUNT_ID = '411571901235'
+        findValue.CODECOMMIT_REPO_URL = 'https://github.com/theenathayalan97/datayaan_website2.0'
+        findValue.ECR_REPO_NAME = 'demo_container'
         findValue.DOCKER_IMAGE_NAME = 'sample-repo'
-        findValue.DOCKER_HOST_IP = '13.233.110.194'
+        findValue.DOCKER_HOST_IP = '01'
         findValue.DOCKER_HOST_PORT = '80'
-        findValue.YOUR_CONTAINER = '411571901235.dkr.ecr.ap-south-1.amazonaws.com/sample-repo'
-        findValue.IMAGE_TAG = "sample-repo"
+        findValue.YOUR_CONTAINER = 'demo_container'
+        findValue.IMAGE_TAG = "latest"
 
 
 
