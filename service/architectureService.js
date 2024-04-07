@@ -98,7 +98,7 @@ async function architecture(req, res, message) {
             return res.status(400).send(`already name created`);
           } else {
             console.error("Terraform Architecture created failed:", applyStderr);
-            fs.unlinkSync(fileName)
+            // fs.unlinkSync(fileName)
             return res.status(400).send("Terraform Architecture created failed");
           }
         } else {

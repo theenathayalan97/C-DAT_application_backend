@@ -550,63 +550,75 @@ async function createEc2Instance(req, res) {
       } else {
         publicIP[i] == true
       }
-      if (subnetId.length > 0) {
-        if (securityGroupId) {
-          let instance = `
-          resource "aws_instance" "${instanceTagName[i]}"{
-              ami = "${ami[i]}"
-              instance_type = "${instanceType[i]}"
-              associate_public_ip_address = "${publicIP[i]}"
-              subnet_id = "${subnetId[i]}"
-              vpc_security_group_ids = ["${securityGroupId[i]}"]
-              tags = {
-              Name = "${instanceTagName[i]}"
-            }
-          }`
-          instanceDetail += instance;
-        } else if (securityGroupTittle) {
-          let instance = `
-                  resource "aws_instance" "${instanceTagName[i]}"{
-                      ami = "${ami[i]}"
-                      instance_type = "${instanceType[i]}"
-                      associate_public_ip_address = ${publicIP[i]}
-                      subnet_id = "${subnetId[i]}"
-                      vpc_security_group_ids = ["aws_security_group.${securityGroupTagName[i]}.id"]
-                      tags = {
-                      Name = "${instanceTagName[i]}"
-                    }
-                  }`
-          instanceDetail += instance;
+      let instance = `
+      resource "aws_instance" "${instanceTagName[i]}"{
+          ami = "${ami[i]}"
+          instance_type = "${instanceType[i]}"
+          associate_public_ip_address = "${publicIP[i]}"
+          subnet_id = "${subnetTagName[i]}"
+          vpc_security_group_ids = ["${securityGroupTagName[i]}"]
+          tags = {
+          Name = "${instanceTagName[i]}"
         }
+      }`
+      instanceDetail += instance;
+      // if (subnetId.length > 0) {
+      //   if (securityGroupId) {
+      //     let instance = `
+      //     resource "aws_instance" "${instanceTagName[i]}"{
+      //         ami = "${ami[i]}"
+      //         instance_type = "${instanceType[i]}"
+      //         associate_public_ip_address = "${publicIP[i]}"
+      //         subnet_id = "${subnetId[i]}"
+      //         vpc_security_group_ids = ["${securityGroupId[i]}"]
+      //         tags = {
+      //         Name = "${instanceTagName[i]}"
+      //       }
+      //     }`
+      //     instanceDetail += instance;
+      //   } else if (securityGroupTittle) {
+      //     let instance = `
+      //             resource "aws_instance" "${instanceTagName[i]}"{
+      //                 ami = "${ami[i]}"
+      //                 instance_type = "${instanceType[i]}"
+      //                 associate_public_ip_address = ${publicIP[i]}
+      //                 subnet_id = "${subnetId[i]}"
+      //                 vpc_security_group_ids = ["aws_security_group.${securityGroupTagName[i]}.id"]
+      //                 tags = {
+      //                 Name = "${instanceTagName[i]}"
+      //               }
+      //             }`
+      //     instanceDetail += instance;
+      //   }
 
-      } else if (subnetTittle) {
-        if (securityGroupId) {
-          let instance = `resource "aws_instance" "${instanceTagName[i]}" {
-              ami = "${ami[i]}"
-              instance_type = "${instanceType[i]}"
-              associate_public_ip_address = ${publicIP[i]}
-              subnet_id = "aws_subnet.${subnetTagName[i]}.id"
-              vpc_security_group_ids = ["${securityGroupId[i]}"]
-              tags = {
-              Name = "${instanceTagName[i]}"
-            }
-          }`
-          instanceDetail += instance;
-        } else if (securityGroupTittle) {
-          let instance = `
-                  resource "aws_instance" "${instanceTagName[i]}"{
-                      ami = "${ami[i]}"
-                      instance_type = "${instanceType[i]}"
-                      associate_public_ip_address = ${publicIP[i]}
-                      subnet_id = "aws_subnet.${subnetTagName[i]}.id"
-                      vpc_security_group_ids = ["aws_security_group.${securityGroupTagName[i]}.id"]
-                      tags = {
-                      Name = "${instanceTagName[i]}"
-                    }
-                  }`
-          instanceDetail += instance;
-        }
-      }
+      // } else if (subnetTittle) {
+      //   if (securityGroupId) {
+      //     let instance = `resource "aws_instance" "${instanceTagName[i]}" {
+      //         ami = "${ami[i]}"
+      //         instance_type = "${instanceType[i]}"
+      //         associate_public_ip_address = ${publicIP[i]}
+      //         subnet_id = aws_subnet.${subnetTagName[i]}.id
+      //         vpc_security_group_ids = ["${securityGroupId[i]}"]
+      //         tags = {
+      //         Name = "${instanceTagName[i]}"
+      //       }
+      //     }`
+      //     instanceDetail += instance;
+      //   } else if (securityGroupTittle) {
+      //     let instance = `
+      //             resource "aws_instance" "${instanceTagName[i]}"{
+      //                 ami = "${ami[i]}"
+      //                 instance_type = "${instanceType[i]}"
+      //                 associate_public_ip_address = ${publicIP[i]}
+      //                 subnet_id = "aws_subnet.${subnetTagName[i]}.id"
+      //                 vpc_security_group_ids = ["aws_security_group.${securityGroupTagName[i]}.id"]
+      //                 tags = {
+      //                 Name = "${instanceTagName[i]}"
+      //               }
+      //             }`
+      //     instanceDetail += instance;
+      //   }
+      // }
     }
     // console.log("instanceDetail : ",instanceDetail);
     return instanceDetail;
