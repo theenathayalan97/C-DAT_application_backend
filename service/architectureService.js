@@ -47,7 +47,7 @@ async function architecture(req, res, message) {
       const formattedDate = currentDate.toISOString().replace(/[:.]/g, '-');
 
       const fileName = `${path.directory}/aws_vpc_${formattedDate}.tf`;
-      // console.log("config : ",config);
+      console.log("config : ",config);
       fs.appendFileSync(fileName, config);
       const configPath = `${path.directory}`;
       process.chdir(configPath);
@@ -112,7 +112,7 @@ async function architecture(req, res, message) {
     } else {
       return res.status(400).json({ message: "Architecture is empty" })
     }
-
+    
   } catch (error) {
     console.log(error)
     return res.status(400).json({ message: "something went wrong", result: error.message })

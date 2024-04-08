@@ -536,7 +536,7 @@ async function createEc2Instance(req, res) {
     if (instanceType.length == 0) {
       return res.status(400).json({ message: "instance type is required" })
     }
-    console.log("detailsssss",instanceDetail)
+    // console.log("detailsssss",instanceDetail)
     // let keyName = req.body.keyName
     // if (keyName.length == 0) {
     //   return res.status(400).json({ message: "key name is required" })
@@ -545,6 +545,14 @@ async function createEc2Instance(req, res) {
       return res.status(400).json({ message: "security group id is required" })
     }
 
+    var nameList = [
+      "c-dat-security","Demo_security","c-dat-sample-1","c-dat-security-2","c-dat-security-3","c-dat-security-4",
+      "c-dat-security-5","c-dat-security-6"
+    ];
+    
+    var finalName = nameList[Math.floor(Math.random() * nameList.length)];
+      
+       
     for (let i = 0; i < instanceTagName.length; i++) {
       if (publicIP[i] == 'false') {
         publicIP[i] == false
@@ -552,8 +560,8 @@ async function createEc2Instance(req, res) {
         publicIP[i] == true
       }
       let instance = `
-      resource "aws_security_group" "Demo_cdat" {
-        name        = "Demo_cdat"
+      resource "aws_security_group" "${finalName}" {
+        name        = "${finalName}"
         description = "Allow TLS inbound traffic"
         vpc_id      =  aws_vpc.${vpcTagName[i]}.id
       
@@ -592,7 +600,7 @@ async function createEc2Instance(req, res) {
         }
       
         tags = {
-          Name = "Demo_cdat"
+          Name = "${finalName}"
         }
       }
       resource "aws_instance" "${instanceTagName[i]}"{
@@ -600,7 +608,7 @@ async function createEc2Instance(req, res) {
           instance_type = "${instanceType[i]}"
           associate_public_ip_address = "${publicIP[i]}"
           subnet_id = aws_subnet.${subnetTagName[i]}.id
-          vpc_security_group_ids = [aws_security_group.Demo_cdat.id]
+          vpc_security_group_ids = [aws_security_group.${finalName}.id]
           tags = {
           Name = "${instanceTagName[i]}"
         }
@@ -664,7 +672,7 @@ async function createEc2Instance(req, res) {
       //   }
       // }
     }
-    // console.log("instanceDetail : ",instanceDetail);
+    console.log("instanceDetail : ",instanceDetail);
     return instanceDetail;
   } catch (error) {
     return res.status(400).json({ message: "something went wrong", result: error.message })

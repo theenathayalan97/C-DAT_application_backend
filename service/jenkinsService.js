@@ -34,7 +34,7 @@ async function jenkinsInstance(req, res, message) {
                       sudo apt install -y awscli docker.io
                       sleep 60 
                       sudo usermod -aG docker ubuntu
-                      sudo usermod -aG docker jen
+                      sudo usermod -aG docker jenkins
                       # echo 'sudo systemctl restart docker' | sudo tee -a /tmp/restart_docker.sh
                       sudo chmod +x /tmp/restart_docker.sh
                       sudo /tmp/restart_docker.sh
