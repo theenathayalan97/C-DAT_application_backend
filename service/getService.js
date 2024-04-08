@@ -235,7 +235,15 @@ async function securityGroupListGet(req, res, message) {
 
 async function subnetGetList(req, res, message) {
     try {
-        const tfConfig = `data "aws_subnets" "sn" {
+        let env = process.env
+        const tfConfig = `
+        provider "aws" {
+            region  = "${env.region}"
+            version = ">= 2.0"  # Specify the version constraint if needed
+            access_key = "${env.accesskey}"
+            secret_key = "${env.secretkey}"
+          }
+        data "aws_subnets" "sn" {
         }
         
         output "sn" {
