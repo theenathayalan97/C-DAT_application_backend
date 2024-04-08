@@ -88,12 +88,12 @@ router.delete("/account_delete", middleware.authorization, middleware.authentica
 router.delete("/file_delete", middleware.authorization, middleware.authentication(['superAdmin','admin'],true),serviceController.serviceDestroy)
 
 //deploy process
-router.post("/docker_instance", middleware.authorization, middleware.authentication(['superAdmin','admin','user'],true),deploymentController.createDockerInstance) //ECR
+router.post("/docker_instance",deploymentController.createDockerInstance) //ECR
 router.post("/cloud_app_runner", middleware.authorization, middleware.authentication(['superAdmin','admin','user'],true),deploymentController.appRunner) //App runner
 router.post("/jenkins_pipeline", middleware.authorization, middleware.authentication(['superAdmin','admin','user'],true),deploymentController.jenkinsPipeline) //Jenkins
 router.post("/ebs", middleware.authorization, middleware.authentication(['superAdmin','admin','user'],true),deploymentController.ebs) //EBS
-router.post("/jenkins_instance", middleware.authorization, middleware.authentication(['superAdmin','admin','user'],true),deploymentController.jenkinsInstance)
-router.post("/jenkins_pipeline", middleware.authorization, middleware.authentication(['superAdmin','admin','user'],true),deploymentController.jenkinsPipeline)
+router.post("/jenkins_instance",deploymentController.jenkinsInstance)
+router.post("/jenkins_pipeline",deploymentController.jenkinsPipeline)
 
 //process
 router.post("/architecture",architectureController.architecture)
