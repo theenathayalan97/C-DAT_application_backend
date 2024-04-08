@@ -58,7 +58,7 @@ async function createDockerInstance(req, res, message) {
   try {
     let repo = req.body.repoName
     let instance_name = req.body.instanceTagName
-    let ami = myFunction(req.body.ami) //ami-0287a05f0ef0e9d9a
+    let ami = "ami-0287a05f0ef0e9d9a" //ami-0287a05f0ef0e9d9a
     let instance_type = req.body.instanceType //t2.micro
     let subnet_id = "subnet-a0f30cc8"  //subnet-027f6c6c1f4cd07c3
     let security_group_id = "sg-0c3bdf31c0e72d41a" //["sg-0c1894e242d5ce805"]
